@@ -15,7 +15,12 @@
     "test:a11y": "playwright test e2e/accessibility.spec.ts",
     "test:lighthouse": "lhci autorun",
     "validate:production": "node --import tsx scripts/validate-production.ts",
-    "validate:launch": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e"
+    "validate:launch": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e",
+    "supabase:start": "supabase start",
+    "supabase:reset": "supabase db reset",
+    "supabase:lint": "supabase db lint --local",
+    "supabase:test": "supabase test db",
+    "supabase:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.8",

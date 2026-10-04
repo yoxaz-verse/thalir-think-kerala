@@ -1,0 +1,3 @@
+"use client";
+import { useEffect } from "react";import { useRouter } from "next/navigation";import { createClient } from "@/lib/supabase/client";
+export function RealtimeRefresh({table,filter}:{table:"messages"|"notifications"|"meeting_proposals";filter?:string}){const router=useRouter();useEffect(()=>{let client;try{client=createClient()}catch{return}const channel=client.channel(`thalir:${table}:${filter??"all"}`,{config:{private:true}}).on("postgres_changes",{event:"*",schema:"public",table,filter},()=>router.refresh()).subscribe();return()=>{void client.removeChannel(channel)}},[filter,router,table]);return null}

@@ -25,6 +25,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Start and verify local Supabase
+        run: |
+          npx supabase start
+          npx supabase db reset
+          npx supabase gen types typescript --local > /tmp/thalir-database.types.ts
+          npx supabase db lint --local
+          npx supabase test db
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

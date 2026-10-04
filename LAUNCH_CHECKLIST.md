@@ -23,6 +23,18 @@ NEXT_PUBLIC_ANALYTICS_ENABLED=true
 
 Keep all three `false` in Development and Preview. Run `npm run validate:production` with production variables before promotion.
 
+### Supabase core platform
+
+- [ ] Create separate Supabase projects for Preview and Production and apply the checked-in migrations to each
+- [ ] Configure the public project URL and publishable key in their intended Vercel environments
+- [ ] Store the Supabase secret key and database URL as server-only secrets—never with a `NEXT_PUBLIC_` prefix
+- [ ] Configure Google OAuth and magic-link redirects for the exact Preview and Production origins
+- [ ] Set invitation expiry, upload limit, and auth redirect origin from `.env.example`
+- [ ] Deploy the notification Edge Function with its invocation secret
+- [ ] Verify the Resend domain and configure the API key and approved sender
+- [ ] Keep transactional notifications disabled until the sender and privacy copy are approved
+- [ ] Assign pilot plans to test accounts through the protected admin surface
+
 ## 2. Vercel project
 
 - [ ] Import the Git repository and keep `main` as the Production branch

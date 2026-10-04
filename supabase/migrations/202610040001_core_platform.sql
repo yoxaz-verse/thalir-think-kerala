@@ -242,6 +242,33 @@ create table public.audit_log (
   created_at timestamptz not null default now()
 );
 
+create or replace function public.queue_notification_email() returns trigger language plpgsql security definer set search_path = '' as $$
+declare recipient public.profiles;
+begin
+  select * into recipient from public.profiles where id=new.user_id and deleted_at is null;
+  if recipient.id is null or (new.type='weekly_summary' and not recipient.email_summaries_enabled) then return new; end if;
+  insert into public.email_outbox(notification_id,recipient,template,locale,payload,idempotency_key)
+  values(new.id,recipient.email,new.type::text,recipient.locale,jsonb_build_object('subject',case when recipient.locale='ml' then new.title_ml else new.title_en end,'html','<p>'||case when recipient.locale='ml' then new.body_ml else new.body_en end||'</p>'),new.id::text)
+  on conflict(idempotency_key) do nothing;
+  return new;
+end $$;
+create trigger notification_email_outbox after insert on public.notifications for each row execute function public.queue_notification_email();
+
+create or replace function public.capture_audit_event() returns trigger language plpgsql security definer set search_path = '' as $$
+declare entity text; payload jsonb;
+begin
+  payload := case when tg_op='DELETE' then to_jsonb(old) else to_jsonb(new) end;
+  entity := coalesce(payload->>'id',payload->>'project_id',payload->>'user_id');
+  insert into public.audit_log(actor_id,action,entity_type,entity_id,metadata)
+  values(auth.uid(),lower(tg_op),tg_table_name,entity,jsonb_build_object('changed_at',now()));
+  return case when tg_op='DELETE' then old else new end;
+end $$;
+create trigger audit_entitlements after insert or update or delete on public.entitlements for each row execute function public.capture_audit_event();
+create trigger audit_content after insert or update or delete on public.content_items for each row execute function public.capture_audit_event();
+create trigger audit_invitations after insert or update or delete on public.project_invitations for each row execute function public.capture_audit_event();
+create trigger audit_interests after update on public.interests for each row when (old.status is distinct from new.status) execute function public.capture_audit_event();
+create trigger audit_deletions after insert or update on public.deletion_requests for each row execute function public.capture_audit_event();
+
 create or replace function public.is_admin() returns boolean language sql stable security definer set search_path = '' as $$
   select exists(select 1 from public.profiles where id = auth.uid() and role = 'admin' and deleted_at is null)
 $$;

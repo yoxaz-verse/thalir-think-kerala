@@ -1,7 +1,86 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Arrow } from "./icons";
-import { findContent, formatDate } from "@/lib/content";
+import { formatDate } from "@/lib/content";
+import { getPublishedContentBySlug } from "@/lib/content-repository";
 import { getDictionary, getLocale } from "@/lib/i18n";
 
-export async function ContentDetail({ params, expected }: { params:Promise<{locale:string;slug:string}>; expected:string[] }) { const p=await params,locale=getLocale(p.locale),d=getDictionary(locale),item=findContent(p.slug); if(!item||!expected.includes(item.kind))notFound(); return <main id="main"><article><header className="detail-hero"><div className="shell"><Link className="back" href={`/${locale}/${item.kind==="story"?"stories":item.kind==="event"?"events":item.kind==="organization"?"ecosystem":"opportunities"}`}>← {d.common.back}</Link><p className="eyebrow">{item.category[locale]}</p><h1>{item.title[locale]}</h1><p className="lede">{item.summary[locale]}</p><div className="detail-meta">{item.date&&<span><b>{d.common.date}</b>{formatDate(item.date,locale)}</span>}{item.location&&<span><b>{d.common.location}</b>{item.location[locale]}</span>}<span><b>{d.common.for}</b>{item.audience.join(" · ")}</span></div></div></header><div className="section shell article-grid"><aside><span>THALIR / NOTE</span><div className="share-line"/></aside><div className="prose"><p className="dropcap">{item.body[locale]}</p><h2>{locale==="en"?"A useful next step":"ഉപകാരപ്രദമായ അടുത്ത ചുവട്"}</h2><p>{locale==="en"?"Connect with Thalir to learn how this pathway fits your context. We will make approved details and application dates explicit as each opportunity opens.":"ഈ അവസരം നിങ്ങളുടെ സാഹചര്യത്തിന് എങ്ങനെ അനുയോജ്യമാകുമെന്ന് അറിയാൻ തളിറുമായി ബന്ധപ്പെടുക. അംഗീകൃത വിവരങ്ങളും അപേക്ഷാ തീയതികളും അവസരം തുറക്കുമ്പോൾ വ്യക്തമാക്കും."}</p><Link className="button" href={`/${locale}/join`}>{d.nav.join}<Arrow/></Link></div></div></article></main> }
+export async function ContentDetail({
+  params,
+  expected,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+  expected: string[];
+}) {
+  const p = await params;
+  const locale = getLocale(p.locale);
+  const d = getDictionary(locale);
+  const item = await getPublishedContentBySlug(p.slug);
+
+  if (!item || !expected.includes(item.kind)) notFound();
+
+  const backRoute =
+    item.kind === "story"
+      ? "stories"
+      : item.kind === "event"
+      ? "events"
+      : item.kind === "organization"
+      ? "ecosystem"
+      : "opportunities";
+
+  return (
+    <main id="main">
+      <article>
+        <header className="detail-hero">
+          <div className="shell">
+            <Link className="back" href={`/${locale}/${backRoute}`}>
+              ← {d.common.back}
+            </Link>
+            <p className="eyebrow">{item.category[locale]}</p>
+            <h1>{item.title[locale]}</h1>
+            <p className="lede">{item.summary[locale]}</p>
+            <div className="detail-meta">
+              {item.date && (
+                <span>
+                  <b>{d.common.date}</b>
+                  {formatDate(item.date, locale)}
+                </span>
+              )}
+              {item.location && (
+                <span>
+                  <b>{d.common.location}</b>
+                  {item.location[locale]}
+                </span>
+              )}
+              <span>
+                <b>{d.common.for}</b>
+                {item.audience.join(" · ")}
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <div className="section shell article-grid">
+          <aside>
+            <span>THALIR / NOTE</span>
+            <div className="share-line" />
+          </aside>
+
+          <div className="prose">
+            <p className="dropcap">{item.body[locale]}</p>
+            <h2>{locale === "en" ? "A useful next step" : "ഉപകാരപ്രദമായ അടുത്ത ചുവട്"}</h2>
+            <p>
+              {locale === "en"
+                ? "Connect with Thalir to learn how this pathway fits your context. We will make approved details and application dates explicit as each opportunity opens."
+                : "ഈ അവസരം നിങ്ങളുടെ സാഹചര്യത്തിന് എങ്ങനെ അനുയോജ്യമാകുമെന്ന് അറിയാൻ തളിറുമായി ബന്ധപ്പെടുക. അംഗീകൃത വിവരങ്ങളും അപേക്ഷാ തീയതികളും അവസരം തുറക്കുമ്പോൾ വ്യക്തമാക്കും."}
+            </p>
+            <Link className="button" href={`/${locale}/join`}>
+              {d.nav.join}
+              <Arrow />
+            </Link>
+          </div>
+        </div>
+      </article>
+    </main>
+  );
+}

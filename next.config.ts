@@ -1,16 +1,19 @@
 import type { NextConfig } from "next";
 
+let supabaseOrigin = "";
+try { supabaseOrigin = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").origin; } catch {}
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "font-src 'self' data:",
   "form-action 'self' https://forms.gle https://docs.google.com",
   "frame-ancestors 'none'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob:${supabaseOrigin ? ` ${supabaseOrigin}` : ""}`,
   "object-src 'none'",
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `connect-src 'self' https://vitals.vercel-insights.com${process.env.NODE_ENV === "development" ? " ws: wss:" : ""}`,
+  `connect-src 'self' https://vitals.vercel-insights.com${supabaseOrigin ? ` ${supabaseOrigin} ${supabaseOrigin.replace("https://","wss://")}` : ""}${process.env.NODE_ENV === "development" ? " ws: wss:" : ""}`,
   "upgrade-insecure-requests",
 ].join("; ");
 

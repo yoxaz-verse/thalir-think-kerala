@@ -1,0 +1,14 @@
+begin;
+select plan(10);
+select has_table('public','profiles','profiles exists');
+select has_table('public','projects','projects exists');
+select has_table('public','interests','interests exists');
+select has_table('public','messages','messages exists');
+select has_table('public','content_items','content exists');
+select policies_are('public','profiles',array['profiles_self','profiles_update_self'],'profiles policies are explicit');
+select policies_are('public','projects',array['projects_read','projects_insert','projects_update'],'project policies are explicit');
+select policies_are('public','messages',array['messages_read','messages_insert'],'message policies are explicit');
+select function_returns('public','consume_project_view',array['uuid'],'record','quota function exists');
+select function_returns('public','accept_project_invitation',array['text'],'uuid','invite function exists');
+select * from finish();
+rollback;
