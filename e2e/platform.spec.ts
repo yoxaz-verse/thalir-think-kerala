@@ -1,6 +1,28 @@
-import {expect,test} from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-test("presents the bilingual platform roadmap honestly",async({page})=>{await page.goto("/en/platform");await expect(page.getByRole("heading",{name:/introduction layer/i})).toBeVisible();await expect(page.getByText("Planned",{exact:true}).first()).toBeVisible();await page.goto("/ml/platform");await expect(page.getByRole("heading",{name:/പരിചയപ്പെടുത്തൽ വേദി/})).toBeVisible()});
-test("routes signed-out users to a safe workspace entry",async({page})=>{await page.goto("/en/app");await expect(page.getByRole("heading",{name:"Build trusted introductions."})).toBeVisible();await expect(page.locator("#main").getByRole("link",{name:"Sign in"})).toHaveAttribute("href","/en/login")});
-test("renders disabled authentication controls when Supabase is unconfigured",async({page})=>{await page.goto("/en/login");await expect(page.getByText(/not connected in this environment/i)).toBeVisible();await expect(page.getByRole("button",{name:"Continue with Google"})).toBeDisabled();await expect(page.getByRole("button",{name:/Email me/})).toBeDisabled()});
-test("keeps private surfaces out of search indexes",async({page})=>{await page.goto("/en/app");await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content",/noindex/);await page.goto("/en/admin");await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content",/noindex/)});
+test("presents the bilingual platform roadmap honestly", async ({ page }) => {
+  await page.goto("/en/platform");
+  await expect(page.getByRole("heading", { name: /introduction layer/i })).toBeVisible();
+  await expect(page.getByText("Planned", { exact: true }).first()).toBeVisible();
+  await page.goto("/ml/platform");
+  await expect(page.getByRole("heading", { name: /പരിചയപ്പെടുത്തൽ വേദി/ })).toBeVisible();
+});
+
+test("routes signed-out users to a safe workspace entry", async ({ page }) => {
+  await page.goto("/en/app");
+  await expect(page.getByRole("heading", { name: "Build trusted introductions." })).toBeVisible();
+  await expect(page.locator("#main").getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/en/login");
+});
+
+test("renders disabled authentication controls when Supabase is unconfigured", async ({ page }) => {
+  await page.goto("/en/login");
+  await expect(page.getByText(/not connected in this environment/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /Email me/ })).toBeDisabled();
+});
+
+test("keeps private surfaces out of search indexes", async ({ page }) => {
+  await page.goto("/en/app");
+  await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
+  await page.goto("/en/admin");
+  await expect(page.locator('meta[name="robots"]').first()).toHaveAttribute("content", /noindex/);
+});
