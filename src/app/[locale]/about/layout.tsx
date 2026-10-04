@@ -1,0 +1,1 @@
+import { localizedMetadata } from "@/lib/metadata";import { getLocale } from "@/lib/i18n";export async function generateMetadata({params}:{params:Promise<{locale:string}>}){const l=getLocale((await params).locale);return localizedMetadata(l,"about",l==="en"?"About Thalir":"തളിറിനെക്കുറിച്ച്")}export default function Layout({children}:{children:React.ReactNode}){return children}

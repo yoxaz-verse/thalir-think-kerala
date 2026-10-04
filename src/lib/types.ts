@@ -16,6 +16,7 @@ export interface ContentItem {
   date?: string;
   location?: Localized;
   featured?: boolean;
+  launchApproved?: boolean;
 }
 
 export interface Dictionary {

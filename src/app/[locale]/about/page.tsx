@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Link from "next/link";
 import { Arrow } from "@/components/icons";
 import { PageHero } from "@/components/page-hero";

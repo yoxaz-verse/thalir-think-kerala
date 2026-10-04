@@ -4,6 +4,7 @@ import "@fontsource-variable/newsreader";
 import "@fontsource-variable/noto-sans-malayalam";
 import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -15,4 +16,4 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html suppressHydrationWarning><body>{children}</body></html>; }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><body>{children}{siteConfig.analyticsEnabled && siteConfig.privacyCopyApproved ? <Analytics/> : null}</body></html>; }
