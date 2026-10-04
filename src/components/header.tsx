@@ -46,7 +46,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: ReturnType<type
               <Link
                 key={href}
                 href={targetPath}
-                className={isActive ? "active" : ""}
+                className={isActive ? "nav-link active" : "nav-link"}
                 onClick={() => setOpen(false)}
               >
                 {label}
