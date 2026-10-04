@@ -6,6 +6,8 @@ playwright-report
 test-results
 .lighthouseci
 tsconfig.tsbuildinfo
+.supabase/
+supabase/.temp/
 .env*
 !.env.example
 .DS_Store
