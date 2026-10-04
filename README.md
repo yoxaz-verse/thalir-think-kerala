@@ -50,6 +50,8 @@ npx supabase gen types typescript --local > src/lib/database.types.generated.ts
 npm run dev
 ```
 
-Configure Google OAuth and the local callback URL in Supabase Auth. Email magic links use the same `/auth/callback` endpoint. Apply migrations before deploying the matching application build. Never expose `SUPABASE_SECRET_KEY`, `SUPABASE_DB_URL`, `RESEND_API_KEY`, or the notification function secret to the browser.
+Configure Google OAuth and the local callback URL in Supabase Auth. Email magic links use the same `/auth/callback` endpoint. Apply migrations before deploying the matching application build. Deploy and schedule the `send-notifications`, `process-file-scans`, and `process-account-deletions` Edge Functions; the first uses `email_outbox`, while file scanning and deletion consume their dedicated pgmq queues. Never expose `SUPABASE_SECRET_KEY`, `SUPABASE_DB_URL`, provider keys, or function secrets to the browser.
+
+For an existing database that already contains the core schema, follow [the production pilot runbook](./docs/PRODUCTION-PILOT-RUNBOOK.md#existing-production-database-upgrade). Do not rerun the core migration or paste partial migration selections into the SQL editor.
 
 Pilot access is deliberately admin-assigned. Payments, Social Funding, Community, Revive and AI advisors are not enabled by this milestone.

@@ -2,6 +2,7 @@ import "server-only";
 import { content as fallbackContent } from "./content";
 import type { ContentItem } from "./types";
 import { createClient } from "./supabase/server";
+import { supabaseConfig } from "./supabase/config";
 
 function fromRow(row: Record<string, unknown>): ContentItem {
   return {
@@ -18,9 +19,16 @@ function fromRow(row: Record<string, unknown>): ContentItem {
 
 export async function getPublishedContent(): Promise<ContentItem[]> {
   const client = await createClient();
-  if (!client) return fallbackContent.filter(item => !item.summary.en.toLowerCase().includes("sample"));
+  if (!client) {
+    if (supabaseConfig.appEnvironment === "production") throw new Error("PUBLIC_CONTENT_DATABASE_UNAVAILABLE");
+    return fallbackContent.filter(item => !item.summary.en.toLowerCase().includes("sample"));
+  }
   const {data,error} = await client.from("content_items").select("*").eq("status","published").order("display_order");
-  if (error) { console.error("Public content query failed", error.message); return []; }
+  if (error) {
+    console.error("Public content query failed", {code:error.code});
+    if (supabaseConfig.appEnvironment === "production") throw new Error("PUBLIC_CONTENT_DATABASE_UNAVAILABLE");
+    return fallbackContent.filter(item => !item.summary.en.toLowerCase().includes("sample"));
+  }
   return (data ?? []).map(row => fromRow(row as unknown as Record<string,unknown>));
 }
 

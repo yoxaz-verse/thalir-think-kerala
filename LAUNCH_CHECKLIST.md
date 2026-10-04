@@ -30,7 +30,9 @@ Keep all three `false` in Development and Preview. Run `npm run validate:product
 - [ ] Store the Supabase secret key and database URL as server-only secrets—never with a `NEXT_PUBLIC_` prefix
 - [ ] Configure Google OAuth and magic-link redirects for the exact Preview and Production origins
 - [ ] Set invitation expiry, upload limit, and auth redirect origin from `.env.example`
-- [ ] Deploy the notification Edge Function with its invocation secret
+- [ ] Deploy and schedule `send-notifications` with `NOTIFICATION_FUNCTION_SECRET`
+- [ ] Deploy and schedule `process-file-scans` and `process-account-deletions` with `WORKER_FUNCTION_SECRET`
+- [ ] Verify file-scan and deletion pgmq jobs are claimed, retried with backoff and acknowledged after terminal processing
 - [ ] Verify the Resend domain and configure the API key and approved sender
 - [ ] Keep transactional notifications disabled until the sender and privacy copy are approved
 - [ ] Assign pilot plans to test accounts through the protected admin surface

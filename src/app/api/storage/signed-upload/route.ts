@@ -1,3 +1,6 @@
-import { randomUUID } from "node:crypto";import { NextResponse } from "next/server";import { z } from "zod";import { getViewer } from "@/lib/viewer";import { supabaseConfig } from "@/lib/supabase/config";
-const schema=z.object({threadId:z.string().uuid(),fileName:z.string().min(1).max(180),contentType:z.enum(["application/pdf","image/jpeg","image/png","image/webp"]),size:z.number().int().positive()});
-export async function POST(request:Request){const {client,user}=await getViewer();if(!client||!user)return NextResponse.json({error:"Unauthorized"},{status:401});const parsed=schema.safeParse(await request.json());if(!parsed.success||parsed.data.size>supabaseConfig.maxUploadBytes)return NextResponse.json({error:"Invalid file"},{status:400});const {data:participant}=await client.from("chat_participants").select("user_id").eq("thread_id",parsed.data.threadId).eq("user_id",user.id).maybeSingle();if(!participant)return NextResponse.json({error:"Forbidden"},{status:403});const safeName=parsed.data.fileName.replace(/[^a-zA-Z0-9._-]/g,"-");const path=`${parsed.data.threadId}/${randomUUID()}-${safeName}`;const {data,error}=await client.storage.from("chat-attachments").createSignedUploadUrl(path);if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({...data,path,maxBytes:supabaseConfig.maxUploadBytes})}
+import {NextResponse} from "next/server";
+
+/** Direct usable uploads were removed for the production pilot. */
+export async function POST(){
+  return NextResponse.json({ok:false,code:"UPLOADS_DISABLED",message:"Use /api/storage/upload-session; all files require quarantine scanning."},{status:410,headers:{"Cache-Control":"no-store"}});
+}
