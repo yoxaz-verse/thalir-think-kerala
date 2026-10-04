@@ -1,0 +1,1 @@
+import { ContentDetail } from "@/components/content-detail"; export default function Page({params}:{params:Promise<{locale:string;slug:string}>}){return <ContentDetail params={params} expected={["program","opportunity"]}/>}
